@@ -3,12 +3,13 @@
 use core::mem::MaybeUninit;
 use core::ptr::null;
 use rustix::io;
+use rustix::runtime_448b8ad740e2a26f as rustix_runtime;
 
 /// A signal action record for use with [`sigaction`].
 pub type Sigaction = libc::sigaction;
 
 /// A signal identifier for use with [`sigaction`].
-pub use rustix::runtime::Signal;
+pub use rustix_runtime::Signal;
 
 /// A signal handler function for use with [`Sigaction`].
 pub use libc::sighandler_t as Sighandler;

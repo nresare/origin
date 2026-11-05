@@ -1,5 +1,8 @@
 //! Architecture-specific assembly code.
 
+#[cfg(all(feature = "take-charge", feature = "thread"))]
+use rustix::runtime_448b8ad740e2a26f as rustix_runtime;
+
 #[cfg(any(
     feature = "take-charge",
     all(not(feature = "unwinding"), feature = "panic-handler-trap")
@@ -250,7 +253,7 @@ pub(super) unsafe fn clone(
         asm!("mov {0:x}, gs", inout(reg) gs);
         let entry_number = gs >> 3;
 
-        let mut user_desc = rustix::runtime::UserDesc {
+        let mut user_desc = rustix_runtime::UserDesc {
             entry_number,
             base_addr: newtls.addr() as u32,
             limit: 0xfffff,
@@ -329,7 +332,7 @@ pub(super) unsafe fn clone(
 #[inline]
 pub(super) unsafe fn set_thread_pointer(ptr: *mut c_void) {
     unsafe {
-        let mut user_desc = rustix::runtime::UserDesc {
+        let mut user_desc = rustix_runtime::UserDesc {
             entry_number: !0u32,
             base_addr: ptr.addr() as u32,
             limit: 0xfffff,
@@ -343,7 +346,7 @@ pub(super) unsafe fn set_thread_pointer(ptr: *mut c_void) {
         user_desc.set_limit_in_pages(1);
         user_desc.set_seg_not_present(0);
         user_desc.set_useable(1);
-        let res = rustix::runtime::set_thread_area(&mut user_desc);
+        let res = rustix_runtime::set_thread_area(&mut user_desc);
         debug_assert_eq!(res, Ok(()));
         debug_assert_ne!(user_desc.entry_number, !0);
 

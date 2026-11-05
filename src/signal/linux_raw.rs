@@ -3,13 +3,14 @@
 #[cfg(not(target_arch = "riscv64"))]
 use crate::arch;
 use rustix::io;
+use rustix::runtime_448b8ad740e2a26f as rustix_runtime;
 
-pub use rustix::runtime::{
+pub use rustix_runtime::{
     KernelSigaction as Sigaction, KernelSigactionFlags as SigactionFlags, Siginfo, Signal,
 };
 
 /// A handler function type for use with [`Sigaction`].
-pub type Sighandler = rustix::runtime::KernelSighandler;
+pub type Sighandler = rustix_runtime::KernelSighandler;
 
 /// Register a signal handler.
 ///
@@ -32,7 +33,7 @@ pub unsafe fn sigaction(sig: Signal, action: Option<Sigaction>) -> io::Result<Si
             }
         }
 
-        rustix::runtime::kernel_sigaction(sig, action)
+        rustix_runtime::kernel_sigaction(sig, action)
     }
 }
 
@@ -42,14 +43,14 @@ pub unsafe fn sigaction(sig: Signal, action: Option<Sigaction>) -> io::Result<Si
 #[doc(alias = "SIG_IGN")]
 #[must_use]
 pub const fn sig_ign() -> Sighandler {
-    rustix::runtime::kernel_sig_ign()
+    rustix_runtime::kernel_sig_ign()
 }
 
 /// A special “default” signal handler representing the default behavior
 /// for handling a signal.
 ///
 /// If you're looking for `SigIgn`; use [`sig_ign`].
-pub use rustix::runtime::KERNEL_SIG_DFL as SIG_DFL;
+pub use rustix_runtime::KERNEL_SIG_DFL as SIG_DFL;
 
 /// `SIGSTKSZ`
 pub const SIGSTKSZ: usize = linux_raw_sys::general::SIGSTKSZ as usize;

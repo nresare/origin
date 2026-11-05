@@ -35,6 +35,7 @@ use alloc::boxed::Box;
 #[cfg(all(feature = "program-at-exit", not(feature = "thread")))]
 use core::cell::UnsafeCell;
 use linux_raw_sys::ctypes::c_int;
+use rustix::runtime_448b8ad740e2a26f as rustix_runtime;
 #[cfg(all(feature = "program-at-exit", feature = "thread"))]
 use rustix_futex_sync::Mutex;
 
@@ -342,7 +343,7 @@ pub fn immediate_exit(status: c_int) -> ! {
     log::trace!("Program exiting with status `{:?}`", status);
 
     // Call `rustix` to exit the program.
-    rustix::runtime::exit_group(status)
+    rustix_runtime::exit_group(status)
 }
 
 /// Execute a trap instruction.

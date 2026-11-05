@@ -1,5 +1,8 @@
 //! Architecture-specific assembly code.
 
+#[cfg(all(feature = "take-charge", feature = "thread"))]
+use rustix::runtime_448b8ad740e2a26f as rustix_runtime;
+
 #[cfg(any(
     feature = "take-charge",
     all(not(feature = "unwinding"), feature = "panic-handler-trap")
@@ -268,7 +271,7 @@ pub(super) unsafe fn clone(
 #[inline]
 pub(super) unsafe fn set_thread_pointer(ptr: *mut c_void) {
     unsafe {
-        let res = rustix::runtime::arm_set_tls(ptr);
+        let res = rustix_runtime::arm_set_tls(ptr);
         debug_assert_eq!(res, Ok(()));
         debug_assert_eq!(thread_pointer(), ptr);
     }
